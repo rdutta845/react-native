@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 /**
  * Sample React Native App
  * https://github.com/facebook/react-native
@@ -6,13 +7,14 @@
  * @flow
  */
 
-import React from 'react';
+import React, {useState} from 'react';
 import {
   SafeAreaView,
   StyleSheet,
   ScrollView,
   View,
   Text,
+  TextInput,
   StatusBar,
 } from 'react-native';
 
@@ -23,56 +25,79 @@ import {
   DebugInstructions,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
+import FetchData from './components/fetchData';
+import {createAppContainer} from 'react-navigation';
+import {createStackNavigator} from 'react-navigation-stack';
+import Todo from './components/todo';
 
-const App: () => React$Node = () => {
+const App = props => {
+  const {navigate} = props.navigation;
+  const [obj, setObj] = useState(1);
+  const [fetchObj, setFetchObj] = useState('');
+  const [timer, setTimer] = useState('');
+  const [inputData, setInputData] = useState('');
+  const index = Math.floor(Math.random() * 10);
+  const addFunction = num => {
+    setObj(obj + num);
+    setTitle();
+  };
+  function fetchTitle() {
+    return function() {
+      console.log('timer', timer);
+      clearTimeout(timer);
+      setTimer(
+        setTimeout(function() {
+          fetch('https://jsonplaceholder.typicode.com/todos/' + index)
+            .then(response => response.json())
+            .then(json => {
+              console.log(json);
+              setFetchObj(json.title);
+            });
+        }, 1000),
+      );
+    };
+  }
+  function navigateTodo() {
+    navigate('Todo');
+  }
+  const setTitle = fetchTitle();
+  function setFieldValue(e) {
+    setInputData(e.nativeEvent.text);
+  }
+ 
   return (
-    <>
-      <StatusBar barStyle="dark-content" />
-      <SafeAreaView>
-        <ScrollView
-          contentInsetAdjustmentBehavior="automatic"
-          style={styles.scrollView}>
-          <Header />
-          {global.HermesInternal == null ? null : (
-            <View style={styles.engine}>
-              <Text style={styles.footer}>Engine: Hermes</Text>
-            </View>
-          )}
-          <View style={styles.body}>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Step One rar</Text>
-              <Text style={styles.sectionDescription}>
-                Edit <Text style={styles.highlight}>App.js</Text> to change this
-                screen and then come back to see your edits.
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>See Your Changes</Text>
-              <Text style={styles.sectionDescription}>
-                <ReloadInstructions />
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Debug</Text>
-              <Text style={styles.sectionDescription}>
-                <DebugInstructions />
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Learn More</Text>
-              <Text style={styles.sectionDescription}>
-                Read the docs to discover what to do next:
-              </Text>
-            </View>
-            <LearnMoreLinks />
-          </View>
-        </ScrollView>
-      </SafeAreaView>
-    </>
+    <View style={styles.paddingTop}>
+      <TextInput
+        value={inputData}
+        onChange={setFieldValue}
+        style={{
+          height: 40,
+          borderColor: 'gray',
+          borderWidth: 1,
+          width: 100,
+          paddingHorizontal: 10,
+        }}
+      />
+      <Text>
+        {inputData} {obj}
+      </Text>
+      <Text>Fetched Title {fetchObj}</Text>
+      <FetchData onClick={addFunction} list={obj} navigateTodo={navigateTodo} />
+    </View>
   );
 };
-
+const MainNavigator = createAppContainer(
+  createStackNavigator({
+    Home: {screen: App},
+    Todo: {screen: Todo},
+  }),
+);
 const styles = StyleSheet.create({
+  paddingTop: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   scrollView: {
     backgroundColor: Colors.lighter,
   },
@@ -111,4 +136,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default App;
+export default MainNavigator;
