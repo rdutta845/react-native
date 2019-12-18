@@ -7,14 +7,18 @@
     "ios": "react-native run-ios",
     "start": "react-native start",
     "test": "jest",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "android-linux": "react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res && react-native run-android"
   },
   "dependencies": {
     "react": "16.9.0",
     "react-native": "0.61.4",
+    "react-native-checkbox": "^2.0.0",
     "react-native-gesture-handler": "^1.5.2",
     "react-navigation": "^4.0.10",
-    "react-navigation-stack": "^1.10.3"
+    "react-navigation-stack": "^1.10.3",
+    "uuid": "^3.3.3",
+    "uuidv4": "^6.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.6.2",

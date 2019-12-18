@@ -52,6 +52,10 @@ const App = props => {
             .then(json => {
               console.log(json);
               setFetchObj(json.title);
+            })
+            .catch(err => {
+              console.log(err);
+              throw err;
             });
         }, 1000),
       );
@@ -64,7 +68,6 @@ const App = props => {
   function setFieldValue(e) {
     setInputData(e.nativeEvent.text);
   }
- 
   return (
     <View style={styles.paddingTop}>
       <TextInput
